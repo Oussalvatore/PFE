@@ -329,12 +329,5 @@ public class Test extends Applet {
         }
     }//fin de la méthode verify
     
-    
-    
-    
-    
-   
 
-    
-	
 }
