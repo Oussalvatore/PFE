@@ -157,19 +157,19 @@ public class Test extends Applet {
         		 getBalance(apdu);
         		 return;
         	 case 0x01:
-        		 getMatricule(apdu);
+        		 getInfo(apdu,matricule);
         		 return;
         	 case 0x02 :
-        		 getNom(apdu);
+        		 getInfo(apdu,nom);
         		 return;
         	 case 0x03 :
-        		 getPrenom(apdu);
+        		 getInfo(apdu,prenom);
         		 return;
         	 case 0x04 :
-        		 getFiliere(apdu);
+        		 getInfo(apdu,filiere);
         		 return;
         	 case 0x05 :
-        		 getDate(apdu);
+        		 getInfo(apdu,date);
         		 return;
         	 default :
              ISOException.throwIt(ISO7816.SW_INCORRECT_P1P2);
@@ -272,50 +272,15 @@ public class Test extends Applet {
         apdu.sendBytes((short)0, (short)2);
    }//fin de la méthode getBalance
     
-    private void getMatricule(APDU apdu)
+    private void getInfo(APDU apdu, byte [] tab)
     {
     	byte [] buffer = apdu.getBuffer();
-    	Util.arrayCopyNonAtomic(matricule, (short)0, buffer, (short)0,(short)(matricule.length));
-		apdu.setOutgoingAndSend((short)0,(short)(matricule.length));
+    	Util.arrayCopyNonAtomic(tab, (short)0, buffer, (short)0,(short)(tab.length));
+		apdu.setOutgoingAndSend((short)0,(short)(tab.length));
 
     	
-    }//fin de la méthode getMatricule
-    
-    
-    private void getNom(APDU apdu)
-    {
-    	byte [] buffer = apdu.getBuffer();
-    	Util.arrayCopyNonAtomic(nom, (short)0, buffer, (short)0,(short)(nom.length));
-		apdu.setOutgoingAndSend((short)0,(short)(nom.length));
-		
-    }//fin de la méthode getNom
-    
-    private void getPrenom(APDU apdu)
-    {
-    	byte [] buffer = apdu.getBuffer();
-    	Util.arrayCopyNonAtomic(prenom, (short)0, buffer, (short)0,(short)(prenom.length));
-		apdu.setOutgoingAndSend((short)0,(short)(prenom.length));
-    	
-    }//fin de la méthode getPrenom
-    
-    private void getFiliere(APDU apdu)
-    {
-    	byte [] buffer = apdu.getBuffer();
-    	Util.arrayCopyNonAtomic(filiere, (short)0, buffer, (short)0,(short)(filiere.length));
-		apdu.setOutgoingAndSend((short)0,(short)(filiere.length));
-		
-    }//fin de la méthode getFiliere
-    
-    
-    private void getDate(APDU apdu)
-    {
-    	byte [] buffer = apdu.getBuffer();
-    	Util.arrayCopyNonAtomic(date, (short)0, buffer, (short)0,(short)(date.length));
-		apdu.setOutgoingAndSend((short)0,(short)(date.length));
-		
-    }//fin de la méthode getFiliere
-    
-    
+    }//fin de la méthode getInfo
+     
     private void verify(APDU apdu) 
     {
         byte[] buffer = apdu.getBuffer();
@@ -330,11 +295,4 @@ public class Test extends Applet {
     }//fin de la méthode verify
     
     
-    
-    
-    
-   
-
-    
-	
 }
