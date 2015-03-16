@@ -83,7 +83,7 @@ public class Test extends Applet {
         
         bOffset = (short) (bOffset+filiereLong+1);
         date = new byte[(short)3];
-        Util.arrayCopy(bArray, (short)(bOffset +1),date,(short)0,3); // Initialisation de la date d'expiration
+        Util.arrayCopy(bArray, (short)(bOffset +1),date,(short)0,(short)3); // Initialisation de la date d'expiration
         
 
         register(); //Enregistrement de l'applet
@@ -320,7 +320,7 @@ public class Test extends Applet {
     {
     	byte[] buffer = apdu.getBuffer();
     	byte len = (byte)apdu.setIncomingAndReceive();
-    	Util.arrayCopy(buffer, (short)0,date,(short)0,3);
+    	Util.arrayCopy(buffer,ISO7816.OFFSET_CDATA ,date,(short)0,(short)3);
     }//Fin de la méthode changedate
     
 }
