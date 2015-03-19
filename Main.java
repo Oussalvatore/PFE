@@ -392,6 +392,8 @@ public class Main {
 				
 			case 'L' : 
 				fin = true ;
+				cad.powerDown();
+
 				break;
 			
 				
