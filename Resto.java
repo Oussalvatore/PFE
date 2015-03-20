@@ -1,4 +1,4 @@
-package test_project;
+package pack_resto;
 
 
 import javacard.framework.APDU;
@@ -8,7 +8,7 @@ import javacard.framework.ISOException;
 import javacard.framework.OwnerPIN;
 import javacard.framework.Util;
 
-public class Test extends Applet {
+public class JavaResto extends Applet {
 	
 	
 	// La classe  
@@ -47,7 +47,7 @@ public class Test extends Applet {
    
    
     
-    private Test (byte[] bArray,short bOffset,byte bLength)  // Constructeur
+    private JavaResto (byte[] bArray,short bOffset,byte bLength)  // Constructeur
     {
         pin = new OwnerPIN(nbEssaisPIN,maxTaillePIN);
         
@@ -82,8 +82,9 @@ public class Test extends Applet {
         
         
         bOffset = (short) (bOffset+filiereLong+1);
-        date = new byte[(short)3];
-        Util.arrayCopy(bArray, (short)(bOffset +1),date,(short)0,(short)3); // Initialisation de la date d'expiration
+        byte dateLong = bArray[bOffset]; // Longueur filière
+        date = new byte[(short)dateLong];
+        Util.arrayCopy(bArray, (short)(bOffset +1),date,(short)0,dateLong); // Initialisation de la date d'expiration
         
 
         register(); //Enregistrement de l'applet
@@ -93,7 +94,7 @@ public class Test extends Applet {
     public static void install(byte[] bArray, short bOffset, byte bLength) //Installation de l'applet
     {
     	
-        new Test(bArray, bOffset, bLength);
+        new JavaResto(bArray, bOffset, bLength);
     } 
 
     public boolean select() 
@@ -154,10 +155,10 @@ public class Test extends Applet {
          	switch(buffer[ISO7816.OFFSET_P1])
          	{
          		case 0x00 :
-         			changepin(apdu);
+         			changePIN(apdu);
          			return;
          		case 0x01 :
-         			changedate(apdu);
+         			changeDate(apdu);
          			return;
          		 default :
              ISOException.throwIt(ISO7816.SW_INCORRECT_P1P2);
@@ -306,7 +307,7 @@ public class Test extends Applet {
         }
     }//Fin de la méthode verify
     
-    private void changepin(APDU apdu)
+    private void changePIN(APDU apdu)
     {
     	byte[] buffer = apdu.getBuffer();
     	byte len = (byte)apdu.setIncomingAndReceive();
@@ -316,11 +317,11 @@ public class Test extends Applet {
 		pin.check(buffer, ISO7816.OFFSET_CDATA, len);
     }//Fin de la méthode changepin
     
-    private void changedate(APDU apdu)
+    private void changeDate(APDU apdu)
     {
     	byte[] buffer = apdu.getBuffer();
-    	byte len = (byte)apdu.setIncomingAndReceive();
-    	Util.arrayCopy(buffer,ISO7816.OFFSET_CDATA ,date,(short)0,(short)3);
+    	 short len = apdu.setIncomingAndReceive();
+    	Util.arrayCopy(buffer,ISO7816.OFFSET_CDATA ,date,(short)0,len);
     }//Fin de la méthode changedate
     
 }
