@@ -47,6 +47,18 @@ public class Main {
    		return resultat ;
    	} //fin da la méthode toString(char [] tab)
     
+    //méthode pour convertire un String en tableau de byte
+    private static byte[] toByte(String str)
+    {
+    	byte resultat [] = new byte[str.length()];
+    	for(int i = 0;i<str.length();i++)
+    	{
+    		resultat[i] = (byte)str.charAt(i);
+    		
+    	}
+    	return resultat ;
+    }
+    
     
     //méthode pour convertire un tableau de byte en tableau de char ;
     private static char [] byteToChar(byte [] byteArray)
@@ -92,13 +104,11 @@ public class Main {
     	apdu.command[Apdu.INS] = Main.VERIFY;
 		apdu.command[Apdu.P1] = 0x00;
 		apdu.command[Apdu.P2] = 0x00;
-		byte [] pin = new byte[5];
+		
 		System.out.println("Entrez le PIN : ");
-		for(int i = 0;i<5;i++)
-		{
-			pin[i] = sc.nextByte();
-		}
-		apdu.setDataIn(pin);
+		String PIN = sc.next();
+		byte [] pinArray = toByte(PIN);
+		apdu.setDataIn(pinArray);
 		cad.exchangeApdu(apdu);
 		evalSW(apdu);
     }//fin de la méthode verify
@@ -164,13 +174,10 @@ public class Main {
     		apdu.command[Apdu.INS] = Main.ADMINISTRATION;
     		apdu.command[Apdu.P1] = p1;
     		apdu.command[Apdu.P2] = 0x00;
-    		byte [] pin = new byte[5];
-    		System.out.println("Entrez le nouveau PIN : ");
-    		for(int i = 0;i<5;i++)
-    		{
-    			pin[i] = sc.nextByte();
-    		}
-    		apdu.setDataIn(pin);
+    		System.out.println("Entrez le nouveau PIN  (max 8 chiffres) : ");
+    		String PIN = sc.next();
+    		byte [] pinArray = toByte(PIN);
+    		apdu.setDataIn(pinArray);
     		cad.exchangeApdu(apdu);
     		evalSW(apdu);
     		
@@ -180,13 +187,10 @@ public class Main {
     		apdu.command[Apdu.INS] = Main.ADMINISTRATION;
     		apdu.command[Apdu.P1] = p1;
     		apdu.command[Apdu.P2] = 0x00;
-    		byte [] date = new byte[3];
-    		System.out.println("Entrez la nouvelle date : ");
-    		for(int i = 0;i<3;i++)
-    		{
-    			date[i] = sc.nextByte();
-    		}
-    		apdu.setDataIn(date);
+    		System.out.println("Entrez la nouvelle date (jj/mm/aaaa) :");
+    		String date = sc.next();
+    		byte [] dateArray = toByte(date);
+    		apdu.setDataIn(dateArray);
     		cad.exchangeApdu(apdu);
     		evalSW(apdu);
 
@@ -204,6 +208,8 @@ public class Main {
 		
 		CadT1Client cad;
 		Socket sckCarte;
+		Scanner sc = new Scanner(System.in);
+
 		
 		try {
 			sckCarte = new Socket("localhost", 9025);
@@ -215,6 +221,7 @@ public class Main {
 		catch (Exception e) 
 		 	{
 				System.out.println("Erreur : impossible de se connecter a la Javacard");
+				sc.close();
 				return;
 		 	}		
 		
@@ -226,11 +233,29 @@ public class Main {
 		catch (Exception e) 
 			{
 			System.out.println("Erreur lors de l'envoi de la commande Powerup a la Javacard");
+			sckCarte.close();
+			sc.close();
 			return;
 			}
 		
 		/*installation de l'applet */
 	
+		System.out.println("avez vous déja installé l'applet ?? (o/n)");
+		String rep = sc.next();
+		rep = rep.toLowerCase();
+		char r = rep.charAt(0);
+		
+		while(r != 'o' && r != 'n')
+		{	
+			System.out.println("Répond par 'o' ou 'n' ");
+			rep = sc.next();
+			rep = rep.toLowerCase();
+		    r = rep.charAt(0);
+		}
+		
+		
+		if(r == 'n')
+		{
 		
 		/* envoi des information de l'initialisation */
 		
@@ -242,20 +267,81 @@ public class Main {
 		installApdu.command[Apdu.P1] = 0x00;
 		installApdu.command[Apdu.P2] = 0x00;
 		
-		byte [] installPram = 
-			    {
-				(byte)0xb, (byte)0x01, (byte)0x02,(byte) 0x03, (byte)0x04,(byte) 0x05,(byte) 0x06, (byte)0x07,(byte) 0x08, (byte)0x09,(byte) 0x00,(byte) 0x00,
-				(byte) 0x30, (byte)0x05,(byte) 0x01, (byte)0x02, (byte)0x03,(byte) 0x04,(byte) 0x05,
-				(byte)0x0C, (byte) 2,(byte) 0,(byte) 1,(byte) 2,(byte) 0,(byte) 0,(byte) 0,(byte) 0,(byte) 6,(byte) 4,(byte) 5,(byte) 5,
-				(byte) 0x09,(byte) 'B',(byte) 'E',(byte) 'K',(byte) 'K',(byte) 'O',(byte) 'U',(byte) 'C',(byte) 'H',(byte) 'E',
-				(byte)0x07,(byte) 'O',(byte) 'U',(byte) 'S',(byte) 'S',(byte) 'A',(byte) 'M',(byte) 'A',
-				(byte)0x06, (byte)'L', (byte)'I',(byte) 'C',(byte) '.',(byte) 'M',(byte) 'I',
-				(byte)0x03,(byte) 13,(byte) 03,(byte) 15
-				};
+		System.out.println("Entrez la valeur de PIN : ");
+		String PIN = sc.next();
+		byte [] pinArray = toByte(PIN);
+
 		
-		installApdu.setDataIn(installPram);
+		System.out.println("Entrez le matricule : ");
+		String matricule = sc.next();
+		byte [] matriculeArray = toByte(matricule);
+
+		
+		System.out.println("Entrez le nom : ");
+		String nom = sc.next();
+		byte [] nomArray = toByte(nom);
+
+		
+		System.out.println("Entrez le prenom : ");
+		String prenom = sc.next();
+		byte [] prenomArray = toByte(prenom);
+
+		
+		System.out.println("Entrez la filiere : ");
+		String filiere = sc.next();
+		byte [] filiereArray = toByte(filiere);
+
+		
+		System.out.println("Entrez la date : ");
+		String date = sc.next();
+		byte [] dateArray = toByte(date);
+
+		
+		
+		int longAID = 12;
+		int longInfo = 6 + PIN.length() + matricule.length() + nom.length() + 
+				           prenom.length() +filiere.length() + date.length();
+		
+		byte [] installParam = new byte[longInfo +longAID + 1];
+		byte [] AID = { 0xb,0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x00, 0x00 };
+		
+		int offset = 0 ;
+		System.arraycopy(AID, 0, installParam, offset, AID.length);
+		
+		offset = offset + 12 ; //
+		installParam[offset] = (byte)longInfo ;
+		
+		offset = offset + 1 ;
+		installParam[offset] = (byte)pinArray.length ;
+		System.arraycopy(pinArray, 0, installParam, offset+1, pinArray.length);
+		
+		offset = offset + pinArray.length + 1;
+		installParam[offset] = (byte)matriculeArray.length ;
+		System.arraycopy(matriculeArray, 0, installParam, offset+1, matriculeArray.length);
+		
+		offset = offset + matriculeArray.length + 1;
+		installParam[offset] = (byte)nomArray.length ;
+		System.arraycopy(nomArray, 0, installParam, offset+1, nomArray.length);
+		
+		offset = offset + nomArray.length + 1;
+		installParam[offset] = (byte)prenomArray.length ;
+		System.arraycopy(prenomArray, 0, installParam, offset+1, prenomArray.length);
+		
+		offset = offset + prenomArray.length + 1;
+		installParam[offset] = (byte)filiereArray.length ;
+		System.arraycopy(filiereArray, 0, installParam, offset+1, filiereArray.length);
+		
+		offset = offset + filiereArray.length + 1;
+		installParam[offset] = (byte)dateArray.length ;
+		System.arraycopy(dateArray, 0, installParam, offset+1, dateArray.length);
+		
+		
+		
+
+
+		
+		installApdu.setDataIn(installParam);
 		cad.exchangeApdu(installApdu);
-		
 		if (installApdu.getStatus() != 0x9000) 
 		{
 			System.out.println("Erreur lors de l'installation de l'applet " + installApdu.getStatus());
@@ -264,7 +350,7 @@ public class Main {
 		
 		
 		
-		
+		}
 
 		
 		/* Sélection de l'applet */
@@ -286,7 +372,7 @@ public class Main {
 		
 		
 		/* Menu principal */
-		Scanner sc = new Scanner(System.in);
+	/*	Scanner sc = new Scanner(System.in);*/
 		boolean fin = false;
 		while (!fin)
 		{
@@ -371,7 +457,8 @@ public class Main {
 			case 'G' :
 				byte [] RepDate = consultation((byte)0x05,apdu,cad);
 				if(RepDate != null){
-				String date = toString(RepDate);
+				char [] charDate = byteToChar(RepDate);
+				String date = toString(charDate);
 				System.out.println("La date est " + date);}
 				break;
 				
@@ -392,17 +479,27 @@ public class Main {
 				
 			case 'L' : 
 				fin = true ;
-				cad.powerDown();
-
 				break;
 			
 				
 			}
 
-		
+			
 		}
+		
+		
+		/* Mise hors tension de la carte */
+		try 
+		{	
+			cad.powerDown();
+			sckCarte.close();
+		} 
+		catch (Exception e) 
+		{
+			System.out.println("Erreur lors de l'envoi de la commande Powerdown a la Javacard");
+			return;
+		}	
 
+	}//fin de la méthode main
 
-	}
-
-}
+}//fin da la classe Main
