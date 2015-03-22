@@ -427,7 +427,8 @@ public class Main {
 			case 'C' :
 				byte [] RepMat = consultation((byte)0x01,apdu,cad);
 				if(RepMat != null){
-				String matricule = toString(RepMat);
+				char [] CharRepMat = byteToChar(RepMat);
+				String matricule = toString(CharRepMat);
 				System.out.println("le matricule est " + matricule );}
 				break;
 				
